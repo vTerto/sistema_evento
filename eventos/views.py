@@ -7,9 +7,9 @@ from rest_framework.pagination import PageNumberPagination
 from .models import Evento, CustomUser
 from .serializer import EventoSerializer, UserSerializer, LoginSerializer, InscricaoSerializer
 
-# 📌 Listar e Criar Eventos (Apenas Admins podem criar)
+
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])  # Apenas usuários autenticados podem acessar
+@permission_classes([IsAuthenticated])  
 def listar_eventos(request):
     if request.method == 'GET':
         eventos = Evento.objects.all()
@@ -17,7 +17,7 @@ def listar_eventos(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        if not request.user.is_staff:  # Apenas administradores podem criar eventos
+        if not request.user.is_staff:  
             return Response({'detail': 'Você não tem permissão para criar eventos.'}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = EventoSerializer(data=request.data)
@@ -27,9 +27,9 @@ def listar_eventos(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 📌 Atualizar Evento (Somente Admins)
+
 @api_view(['PUT', 'PATCH'])
-@permission_classes([IsAuthenticated, IsAdminUser])  # Apenas admins podem atualizar eventos
+@permission_classes([IsAuthenticated, IsAdminUser])  
 def atualizar_evento(request, pk):
     try:
         evento = Evento.objects.get(pk=pk)
@@ -47,7 +47,7 @@ def atualizar_evento(request, pk):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 📌 Deletar Evento (Somente Admins)
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def deletar_evento(request, pk):
@@ -60,14 +60,14 @@ def deletar_evento(request, pk):
     return Response({'detail': 'Evento deletado com sucesso'}, status=status.HTTP_204_NO_CONTENT)
 
 
-# 📌 Registro de Usuário
+
 class RegistroUsuario(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
 
 
-# 📌 Login de Usuário
+
 class LoginUsuario(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
@@ -85,14 +85,14 @@ class LoginUsuario(generics.GenericAPIView):
         })
 
 
-# 📌 Paginação de Eventos
+
 class EventoPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
 
 
-# 📌 Listar Eventos com Paginação
+
 class ListarEventos(generics.GenericAPIView):
     queryset = Evento.objects.all()
     serializer_class = EventoSerializer
@@ -106,9 +106,9 @@ class ListarEventos(generics.GenericAPIView):
         return paginator.get_paginated_response(serializer.data)
 
 
-# 📌 Inscrição em Evento (Usuários comuns podem se inscrever)
+
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])  # Apenas usuários autenticados podem se inscrever
+@permission_classes([IsAuthenticated])  
 def inscrever_evento(request):
     serializer = InscricaoSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
