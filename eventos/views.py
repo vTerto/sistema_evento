@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.pagination import PageNumberPagination
 from .models import Evento, CustomUser
 from .serializer import EventoSerializer, UserSerializer, LoginSerializer, InscricaoSerializer
+from django.http import HttpResponse
 
 
 @api_view(['GET', 'POST'])
@@ -115,3 +116,6 @@ def inscrever_evento(request):
         serializer.save()
         return Response({'detail': 'Inscrição realizada com sucesso!'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def home(request):
+    return HttpResponse("Bem-vindo ao Sistema de Eventos!")
